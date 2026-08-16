@@ -12,7 +12,7 @@ Two layers:
   Gemini (free tier), a local Ollama, or any OpenAI-compatible endpoint — your choice, your
   key, your data stays local except for the actual model calls.
 
-![careerOpsIL dashboard demo](docs/media/demo.gif)
+![careerOpsIL dashboard demo](docs/media/1-tui-overview.gif)
 
 ---
 
@@ -89,20 +89,32 @@ full routing table from request → script).
 
 ## Screenshots
 
-**Pipeline screen** — the tracker, grouped by status, sorted by fit score:
+**1. The dashboard TUI** — navigate rows, switch tabs, cycle sort mode, toggle
+grouped/flat view:
 
-![Pipeline screen](docs/media/pipeline.png)
+![Dashboard TUI overview](docs/media/1-tui-overview.gif)
 
-**Row actions menu** (`Enter` on a row) — jumps straight to viewing the report,
-opening the posting URL, regenerating the tailored resume, or re-evaluating,
-without hunting for the right key:
+**2. Talking to it through Claude Code** — natural language in, a real read of
+your own tracker data out, via the `/careeropsil` skill:
 
-![Row actions menu](docs/media/row-menu.png)
+![Claude Code integration](docs/media/2-claude-code.gif)
 
-**Evaluation report** — score, and Blocks A–G (role fit, CV match, positioning,
-comp research, personalization, interview prep, posting legitimacy):
+**3. The job-search function** — reopen scanned postings, filter by role
+category, add straight to the tracker (it disappears from the pending list the
+moment it's added):
 
-![Evaluation report viewer](docs/media/report.png)
+![Job search and scan results](docs/media/3-job-search.gif)
+
+**4. Evaluation reports** — score plus Blocks A–G (role fit, CV match,
+positioning, comp research, personalization, interview prep, posting
+legitimacy), reached straight from the row actions menu:
+
+![Evaluation report viewer](docs/media/4-evaluation-report.gif)
+
+**5. Pipeline analytics** — funnel, score distribution, and conversion rates
+computed live from the tracker:
+
+![Funnel and progress screen](docs/media/5-funnel-progress.gif)
 
 ---
 
