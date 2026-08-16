@@ -46,6 +46,45 @@ Once set up, you land on the **pipeline screen** — your application tracker.
 
 ---
 
+## Using it with Claude Code
+
+The repo ships a `CLAUDE.md` and a `/careeropsil` skill, so you can drive everything
+through natural language instead of remembering script names and flags.
+
+**Interactive:**
+
+```bash
+cd careerOpsIL
+claude
+```
+
+Then either type `/careeropsil` to load the router explicitly, or just talk — "scan
+for new jobs," "evaluate this posting: `<url>`," "what's my tracker status," "draft a
+cover letter for report #12." `CLAUDE.md` auto-loads for every session in this
+directory, so plain requests work even without invoking the skill by name; `/careeropsil`
+mainly makes the routing explicit and loads the safety notes up front.
+
+**Headless / one-shot** (scripting, cron, CI):
+
+```bash
+cd careerOpsIL
+claude -p "scan for new jobs and evaluate the top 3"
+```
+
+Runs the prompt once and exits — no interactive session.
+
+**One thing to know:** `dashboard.py` is a Textual TUI — Claude won't drive it
+interactively (it knows to call the underlying single-purpose scripts instead, e.g.
+`scan.py --json`, `evaluate.py --json`, `tracker.py query --json`). For the visual
+dashboard, run `python3 dashboard.py --path .` yourself as usual.
+
+What's in scope for Claude here is documented in `CLAUDE.md` (operating rules — no
+auto-submitting applications, no browser automation, tracker writes only through
+`merge_tracker.py`/`set_status.py`) and `.claude/skills/careeropsil/SKILL.md` (the
+full routing table from request → script).
+
+---
+
 ## Dashboard keys
 
 ### Pipeline screen (main view)
