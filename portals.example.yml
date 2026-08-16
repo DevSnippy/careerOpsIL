@@ -1,0 +1,21 @@
+title_filter:
+  positive:
+  - Backend
+  - Frontend
+  - DevOps
+  negative:
+  - Manager
+location_filter:
+  always_allow: []
+  block: []
+  allow:
+  - Remote
+tracked_companies: []
+jobspy:
+  enabled: false
+  sites:
+  - indeed
+  - linkedin
+  results_wanted: 20
+  country_indeed: usa
+  location: ""

@@ -1,0 +1,22 @@
+# Secrets
+.env
+
+# Personal config and data — every user's own job search
+cv.md
+portals.yml
+data/
+batch/
+reports/
+output/
+jds/
+interview-prep/
+article-digest.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# OS
+.DS_Store

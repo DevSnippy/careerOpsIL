@@ -1,0 +1,28 @@
+textual>=8.0
+PyYAML>=6.0
+
+# Used by generate_pdf.py / generate_cover_letter.py / img_to_pdf.py to render
+# HTML to PDF via headless Chromium.
+# After `pip install -r requirements.txt`, also run:
+#   playwright install chromium
+# This downloads a ~250MB Chromium build — a heavier setup step than the
+# other dependencies above.
+playwright>=1.40
+
+# generate_latex.py shells out to the `tectonic` binary to compile .tex to
+# PDF (a system package, not installable via pip — e.g. `brew install tectonic`
+# on macOS). Without it, generate_latex.py still runs its structural
+# validation but reports compilation as unavailable.
+
+# Used by cv_intake.py (dashboard.py's onboarding screens) to extract text
+# from an uploaded PDF resume before sending it to Gemini for parsing.
+pypdf>=4.0
+
+# OPTIONAL — enables multi-board search (LinkedIn/Indeed/Glassdoor/Google/
+# ZipRecruiter/Bayt) in scan.py, on top of the Greenhouse/Ashby/Lever
+# per-company scan. Requires Python >=3.10 (this repo otherwise targets
+# 3.9+), so it needs its own virtualenv:
+#   python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
+# Without it, scan.py still runs the Greenhouse/Ashby/Lever path fine and
+# just skips jobspy with a warning if portals.yml has `jobspy: enabled: true`.
+# python-jobspy>=1.1
