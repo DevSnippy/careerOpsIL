@@ -12,6 +12,8 @@ Two layers:
   Gemini (free tier), a local Ollama, or any OpenAI-compatible endpoint — your choice, your
   key, your data stays local except for the actual model calls.
 
+![careerOpsIL dashboard demo](docs/media/demo.gif)
+
 ---
 
 ## Setup
@@ -82,6 +84,85 @@ What's in scope for Claude here is documented in `CLAUDE.md` (operating rules �
 auto-submitting applications, no browser automation, tracker writes only through
 `merge_tracker.py`/`set_status.py`) and `.claude/skills/careeropsil/SKILL.md` (the
 full routing table from request → script).
+
+---
+
+## Screenshots
+
+**Pipeline screen** — the tracker, grouped by status, sorted by fit score:
+
+![Pipeline screen](docs/media/pipeline.png)
+
+**Row actions menu** (`Enter` on a row) — jumps straight to viewing the report,
+opening the posting URL, regenerating the tailored resume, or re-evaluating,
+without hunting for the right key:
+
+![Row actions menu](docs/media/row-menu.png)
+
+**Evaluation report** — score, and Blocks A–G (role fit, CV match, positioning,
+comp research, personalization, interview prep, posting legitimacy):
+
+![Evaluation report viewer](docs/media/report.png)
+
+---
+
+## Architecture
+
+Two layers, deliberately kept independent so the AI half is optional:
+
+```
+                 ┌─────────────────────────────┐
+                 │        dashboard.py          │   Textual TUI — the one
+                 │  (Pipeline / Report / Scan /  │   long-running process,
+                 │   Portals / Cover Letter /…)  │   everything else is a
+                 └───────────────┬───────────────┘   short-lived subprocess
+                                 │ subprocess.run([sys.executable, "<tool>.py", ...])
+        ┌────────────────────────┼────────────────────────┐
+        ▼                        ▼                        ▼
+ deterministic tools        AI-backed tools          shared libraries
+ tracker.py                 evaluate.py               applications_table.py
+ set_status.py              scan.py (jobspy path)      llm_providers.py
+ merge_tracker.py           application_drafts.py      portals_config.py
+ verify_pipeline.py         portfolio.py               pdf_backend.py
+ stats.py, find.py, …       form_answers.py, …          canonical_states.py
+        │                        │                        │
+        └────────────────────────┴────────────────────────┘
+                                 ▼
+                   data/applications.md  (the only source of truth)
+                   portals.yml · cv.md · .env
+```
+
+**Why subprocesses, not function calls.** Every scan/evaluate/PDF-rendering/AI
+call from the dashboard runs as a real subprocess (`python3 tool.py ... --json`),
+not an in-process import. Playwright's sync API and a couple of the scanning
+libraries genuinely cannot run safely inside Textual's own asyncio event loop —
+tried it, hit real hangs. A subprocess boundary sidesteps that entirely and
+gives every long-running action a clean timeout and a JSON contract instead of
+a shared-thread mess.
+
+**Why the tracker is one Markdown table.** `data/applications.md` is the single
+source of truth — a human-readable, git-diffable, grep-able table. Nothing
+writes to it directly except `merge_tracker.py` (new rows, via a staged TSV in
+`batch/tracker-additions/`) and `set_status.py` (status/note changes on an
+existing row). Every other tool — the dashboard, `tracker.py`, `stats.py` — only
+reads it. One writer path per kind of change means no two tools can
+race-corrupt the table, and `verify_pipeline.py` / `dedup_tracker.py` /
+`normalize_statuses.py` exist specifically to catch and repair drift if
+something upstream misbehaves.
+
+**Why the LLM layer is swappable.** `llm_providers.py` is the only module that
+knows how to talk to a model — Gemini, a local Ollama, or any
+OpenAI-compatible endpoint, selected by `LLM_PROVIDER` in `.env`. Every
+AI-backed tool (`evaluate.py`, `application_drafts.py`, `portfolio.py`,
+`form_answers.py`, `ai_setup.py`) calls through this one module instead of
+embedding its own HTTP client, so switching providers is a config change, not
+a code change.
+
+**Why nothing auto-submits.** Cover letters, application emails, and form
+answers are drafts written to `output/`, gated behind an explicit approval
+keypress before a PDF even renders. There is no browser-automation path that
+fills out a real application form — that was cut as a product decision, not a
+missing feature (see `CLAUDE.md`).
 
 ---
 
