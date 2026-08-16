@@ -116,6 +116,13 @@ computed live from the tracker:
 
 ![Funnel and progress screen](docs/media/5-funnel-progress.gif)
 
+**6. Multilingual by nature** — since it's just talking to an LLM, careerOpsIL
+works in whatever language you use. Asked in Hebrew here: search the pending
+jobs, pick the best fit, and draft a tailored resume summary — real output
+from Claude reading the actual tracker and CV files:
+
+![Claude Code in Hebrew](docs/media/6-claude-hebrew.gif)
+
 ---
 
 ## Architecture
